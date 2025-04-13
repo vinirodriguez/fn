@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Controle de Dívidas - APC Finanças</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Firebase + bibliotecas -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <!-- Exportação -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <!-- Tela de Login -->
+  <div id="login-container" class="container">
+    <h1>Login</h1>
+    <input type="email" id="login-email" placeholder="E-mail" />
+    <input type="password" id="login-password" placeholder="Senha" />
+    <label><input type="checkbox" id="manter-conectado" /> Manter-me conectado</label>
+    <button onclick="login()">Login</button>
+    <p>Não tem uma conta? <a href="javascript:void(0);" onclick="toggleToCadastro()">Cadastre-se</a></p>
+  </div>
+
+  <!-- Tela de Cadastro -->
+  <div id="cadastro-container" class="container" style="display:none;">
+    <h1>Cadastro</h1>
+    <input type="text" id="cadastro-nome" placeholder="Nome" />
+    <input type="email" id="cadastro-email" placeholder="E-mail" />
+    <input type="password" id="cadastro-senha" placeholder="Senha" />
+    <button onclick="cadastrarUsuario()">Cadastrar</button>
+    <p>Já tem uma conta? <a href="javascript:void(0);" onclick="toggleToLogin()">Faça login</a></p>
+  </div>
+
+  <!-- Tela do Controle de Dívidas -->
+  <div id="controle-container" class="container" style="display:none;">
+    <h1>APC Finanças</h1>
+    <div class="theme-toggle">
+      <button onclick="alternarTema()">Alternar Tema</button>
+    </div>
+    <label for="saldoInicial">Saldo Disponível:</label>
+    <input type="number" id="saldoInicial" placeholder="Digite seu saldo disponível">
+    <button onclick="adicionarSaldo()">Adicionar Saldo</button>
+    <hr>
+    <input type="text" id="nome" placeholder="Nome da dívida">
+    <input type="number" id="valor" placeholder="Valor da dívida (R$)">
+    <button onclick="adicionarDivida()">Adicionar Dívida</button>
+    <div id="listaDividas"></div>
+    <div class="total">Total de Dívidas Pendentes: R$ <span id="total">0.00</span></div>
+    <div class="saldo">Saldo Restante: R$ <span id="saldoRestante">0.00</span></div>
+    <div class="export-buttons">
+      <button onclick="exportarParaPDF()">Exportar para PDF</button>
+      <button onclick="exportarParaExcel()">Exportar para Excel</button>
+    </div>
+    <button onclick="logout()">Sair</button>
+  </div>
+
+  <!-- JS Principal -->
+  <script src="js/script.js"></script>
+</body>
+</html>
