@@ -5,83 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>APC Finanças</title>
   <link rel="stylesheet" href="style.css" />
-  <body class="light-theme">
+</head>
+<body class="light-theme">
 
-    <!-- Topo -->
-    <div class="top-bar">
-      <div class="logo">💰 APC Finanças</div>
-      <div>
-        <button class="tema-btn" onclick="alternarTema()">🌗 Tema</button>
-        <button class="logout-btn" onclick="logout()">Sair</button>
+  <!-- Topo -->
+  <div class="top-bar">
+    <div class="logo">💰 APC Finanças</div>
+    <div>
+      <button class="tema-btn" onclick="alternarTema()">🌗 Tema</button>
+      <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="login-container" class="centralizado card">
+    <h2>Entrar</h2>
+    <input type="email" id="login-email" placeholder="E-mail" />
+    <input type="password" id="login-password" placeholder="Senha" />
+    <button onclick="login()">Entrar</button>
+    <p>Não tem conta? <a href="#" onclick="toggleToCadastro()">Cadastre-se</a></p>
+  </div>
+
+  <!-- CADASTRO -->
+  <div id="cadastro-container" class="centralizado card" style="display: none;">
+    <h2>Cadastro</h2>
+    <input type="email" id="cadastro-email" placeholder="E-mail" />
+    <input type="password" id="cadastro-senha" placeholder="Senha" />
+    <button onclick="cadastrarUsuario()">Cadastrar</button>
+    <p>Já tem conta? <a href="#" onclick="toggleToLogin()">Entrar</a></p>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="controle-container" style="display: none;">
+    <div class="dashboard">
+
+      <!-- SALDO -->
+      <div class="card">
+        <h3>Saldo Inicial</h3>
+        <input type="number" id="saldoInicial" placeholder="Digite o saldo em R$" />
+        <button onclick="adicionarSaldo()">Salvar saldo</button>
       </div>
-    </div>
 
-    <!-- LOGIN -->
-    <div id="login-container" class="centralizado card">
-      <h2>Entrar</h2>
-      <input type="email" id="login-email" placeholder="E-mail" />
-      <input type="password" id="login-password" placeholder="Senha" />
-      <button onclick="login()">Entrar</button>
-      <p>Não tem conta? <a href="#" onclick="toggleToCadastro()">Cadastre-se</a></p>
-    </div>
-
-    <!-- CADASTRO -->
-    <div id="cadastro-container" class="centralizado card" style="display: none;">
-      <h2>Cadastro</h2>
-      <input type="email" id="cadastro-email" placeholder="E-mail" />
-      <input type="password" id="cadastro-senha" placeholder="Senha" />
-      <button onclick="cadastrarUsuario()">Cadastrar</button>
-      <p>Já tem conta? <a href="#" onclick="toggleToLogin()">Entrar</a></p>
-    </div>
-
-    <!-- DASHBOARD -->
-    <div id="controle-container" style="display: none;">
-      <div class="dashboard">
-
-        <!-- SALDO -->
-        <div class="card">
-          <h3>Saldo Inicial</h3>
-          <input type="number" id="saldoInicial" placeholder="Digite o saldo em R$" />
-          <button onclick="adicionarSaldo()">Salvar saldo</button>
-        </div>
-
-        <!-- RESUMO -->
-        <div class="card">
-          <h3>Resumo</h3>
-          <p><strong>Saldo restante:</strong> R$ <span id="saldoRestante">0.00</span></p>
-          <p><strong>Total em dívidas:</strong> R$ <span id="total">0.00</span></p>
-        </div>
-
-        <!-- NOVA DÍVIDA -->
-        <div class="card">
-          <h3>Adicionar Dívida</h3>
-          <input type="text" id="nome" placeholder="Nome da dívida" />
-          <input type="number" id="valor" placeholder="Valor em R$" />
-          <button onclick="adicionarDivida()">Adicionar</button>
-        </div>
-
-        <!-- LISTA DE DÍVIDAS -->
-        <div class="card lista-dividas">
-          <h3>Minhas Dívidas</h3>
-          <div id="listaDividas"></div>
-        </div>
-  
-        <!-- Exportação -->
-        <button onclick="exportarPDF()">Exportar para PDF</button>
-        <button onclick="exportarExcel()">Exportar para Excel</button>
-
+      <!-- RESUMO -->
+      <div class="card">
+        <h3>Resumo</h3>
+        <p><strong>Saldo restante:</strong> R$ <span id="saldoRestante">0.00</span></p>
+        <p><strong>Total em dívidas:</strong> R$ <span id="total">0.00</span></p>
       </div>
-    </div>
 
-    <div class="footer">
-      © APC Finanças 2025
-    </div>
+      <!-- NOVA DÍVIDA -->
+      <div class="card">
+        <h3>Adicionar Dívida</h3>
+        <input type="text" id="nome" placeholder="Nome da dívida" />
+        <input type="number" id="valor" placeholder="Valor em R$" />
+        <button onclick="adicionarDivida()">Adicionar</button>
+      </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  </body>
-  <script src="script.js"></script>
+      <!-- LISTA DE DÍVIDAS -->
+      <div class="card lista-dividas">
+        <h3>Minhas Dívidas</h3>
+        <div id="listaDividas"></div>
+      </div>
+
+      <!-- Exportação -->
+      <button onclick="exportarPDF()">Exportar para PDF</button>
+      <button onclick="exportarExcel()">Exportar para Excel</button>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    © APC Finanças 2025
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="app.js"></script> <!-- Seu JS aqui -->
+</body>
 </html>
