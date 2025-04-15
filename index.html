@@ -38,22 +38,18 @@
   <!-- DASHBOARD -->
   <div id="controle-container" style="display: none;">
     <div class="dashboard">
-
-      <!-- SALDO -->
       <div class="card">
         <h3>Saldo Inicial</h3>
         <input type="number" id="saldoInicial" placeholder="Digite o saldo em R$" />
         <button onclick="adicionarSaldo()">Salvar saldo</button>
       </div>
 
-      <!-- RESUMO -->
       <div class="card">
         <h3>Resumo</h3>
         <p><strong>Saldo restante:</strong> R$ <span id="saldoRestante">0.00</span></p>
         <p><strong>Total em dívidas:</strong> R$ <span id="total">0.00</span></p>
       </div>
 
-      <!-- NOVA DÍVIDA -->
       <div class="card">
         <h3>Adicionar Dívida</h3>
         <input type="text" id="nome" placeholder="Nome da dívida" />
@@ -61,22 +57,17 @@
         <button onclick="adicionarDivida()">Adicionar</button>
       </div>
 
-      <!-- LISTA DE DÍVIDAS -->
       <div class="card lista-dividas">
         <h3>Minhas Dívidas</h3>
         <div id="listaDividas"></div>
       </div>
 
-      <!-- Exportação -->
       <button onclick="exportarPDF()">Exportar para PDF</button>
       <button onclick="exportarExcel()">Exportar para Excel</button>
-
     </div>
   </div>
 
-  <div class="footer">
-    © APC Finanças 2025
-  </div>
+  <div class="footer">© APC Finanças 2025</div>
 
   <!-- Scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -84,6 +75,6 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="app.js"></script> <!-- Seu JS aqui -->
+  <script src="app.js"></script>
 </body>
 </html>
