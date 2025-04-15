@@ -1,67 +1,81 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Controle de Dívidas - APC Finanças</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Estilos -->
-  <link rel="stylesheet" href="css/style.css">
-
-  <!-- Firebase + bibliotecas -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
-  <!-- Exportação -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>APC Finanças</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <!-- Tela de Login -->
-  <div id="login-container" class="container">
-    <h1>Login</h1>
-    <input type="email" id="login-email" placeholder="E-mail" />
-    <input type="password" id="login-password" placeholder="Senha" />
-    <label><input type="checkbox" id="manter-conectado" /> Manter-me conectado</label>
-    <button onclick="login()">Login</button>
-    <p>Não tem uma conta? <a href="javascript:void(0);" onclick="toggleToCadastro()">Cadastre-se</a></p>
+<body class="light-theme">
+
+  <!-- Topo -->
+  <div class="top-bar">
+    <div class="logo">💰 APC Finanças</div>
+    <div>
+      <button class="tema-btn" onclick="alternarTema()">🌗 Tema</button>
+      <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
   </div>
 
-  <!-- Tela de Cadastro -->
-  <div id="cadastro-container" class="container" style="display:none;">
-    <h1>Cadastro</h1>
-    <input type="text" id="cadastro-nome" placeholder="Nome" />
+  <!-- LOGIN -->
+  <div id="login-container" class="centralizado card">
+    <h2>Entrar</h2>
+    <input type="email" id="login-email" placeholder="E-mail" />
+    <input type="password" id="login-password" placeholder="Senha" />
+    <button onclick="login()">Entrar</button>
+    <p>Não tem conta? <a href="#" onclick="toggleToCadastro()">Cadastre-se</a></p>
+  </div>
+
+  <!-- CADASTRO -->
+  <div id="cadastro-container" class="centralizado card" style="display: none;">
+    <h2>Cadastro</h2>
     <input type="email" id="cadastro-email" placeholder="E-mail" />
     <input type="password" id="cadastro-senha" placeholder="Senha" />
     <button onclick="cadastrarUsuario()">Cadastrar</button>
-    <p>Já tem uma conta? <a href="javascript:void(0);" onclick="toggleToLogin()">Faça login</a></p>
+    <p>Já tem conta? <a href="#" onclick="toggleToLogin()">Entrar</a></p>
   </div>
 
-  <!-- Tela do Controle de Dívidas -->
-  <div id="controle-container" class="container" style="display:none;">
-    <h1>APC Finanças</h1>
-    <div class="theme-toggle">
-      <button onclick="alternarTema()">Alternar Tema</button>
+  <!-- DASHBOARD -->
+  <div id="controle-container" style="display: none;">
+    <div class="dashboard">
+
+      <!-- SALDO -->
+      <div class="card">
+        <h3>Saldo Inicial</h3>
+        <input type="number" id="saldoInicial" placeholder="Digite o saldo em R$" />
+        <button onclick="adicionarSaldo()">Salvar saldo</button>
+      </div>
+
+      <!-- RESUMO -->
+      <div class="card">
+        <h3>Resumo</h3>
+        <p><strong>Saldo restante:</strong> R$ <span id="saldoRestante">0.00</span></p>
+        <p><strong>Total em dívidas:</strong> R$ <span id="total">0.00</span></p>
+      </div>
+
+      <!-- NOVA DÍVIDA -->
+      <div class="card">
+        <h3>Adicionar Dívida</h3>
+        <input type="text" id="nome" placeholder="Nome da dívida" />
+        <input type="number" id="valor" placeholder="Valor em R$" />
+        <button onclick="adicionarDivida()">Adicionar</button>
+      </div>
+
+      <!-- LISTA DE DÍVIDAS -->
+      <div class="card lista-dividas">
+        <h3>Minhas Dívidas</h3>
+        <div id="listaDividas"></div>
+      </div>
     </div>
-    <label for="saldoInicial">Saldo Disponível:</label>
-    <input type="number" id="saldoInicial" placeholder="Digite seu saldo disponível">
-    <button onclick="adicionarSaldo()">Adicionar Saldo</button>
-    <hr>
-    <input type="text" id="nome" placeholder="Nome da dívida">
-    <input type="number" id="valor" placeholder="Valor da dívida (R$)">
-    <button onclick="adicionarDivida()">Adicionar Dívida</button>
-    <div id="listaDividas"></div>
-    <div class="total">Total de Dívidas Pendentes: R$ <span id="total">0.00</span></div>
-    <div class="saldo">Saldo Restante: R$ <span id="saldoRestante">0.00</span></div>
-    <div class="export-buttons">
-      <button onclick="exportarParaPDF()">Exportar para PDF</button>
-      <button onclick="exportarParaExcel()">Exportar para Excel</button>
-    </div>
-    <button onclick="logout()">Sair</button>
   </div>
 
-  <!-- JS Principal -->
-  <script src="js/script.js"></script>
+  <div class="footer">
+    © APC Finanças 2025
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
