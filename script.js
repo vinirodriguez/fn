@@ -1,4 +1,3 @@
-// Firebase Configuração
 const firebaseConfig = {
   apiKey: "AIzaSyBIfgDiQ9XnUqQY_7WxD7HoVWs7WCZ5AX8",
   authDomain: "gerenciamento-de-dividas.firebaseapp.com",
@@ -65,6 +64,10 @@ function salvarDadosUsuario() {
   database.ref('usuarios/' + uid).set({
     dividas: dividas,
     saldo: saldo
+  }).then(() => {
+    console.log("Dados salvos com sucesso.");
+  }).catch(error => {
+    console.error("Erro ao salvar dados:", error);
   });
 }
 
@@ -197,53 +200,4 @@ function excluirDivida(index) {
 }
 
 // Função para atualizar o total
-function atualizarTotal() {
-  let totalDividas = dividas.reduce((total, divida) => total + (divida.paga ? 0 : divida.valor), 0);
-  document.getElementById('total').textContent = totalDividas.toFixed(2);
-
-  let saldoRestante = saldo - totalDividas;
-  document.getElementById('saldoRestante').textContent = saldoRestante.toFixed(2);
-}
-
-// Função para exportar para PDF
-function exportarPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  doc.text('Controle de Dívidas', 20, 20);
-  doc.text(`Saldo Inicial: R$ ${saldo.toFixed(2)}`, 20, 30);
-  
-  let yPosition = 40;
-  dividas.forEach(divida => {
-    doc.text(`${divida.nome} - R$ ${divida.valor.toFixed(2)} - ${divida.paga ? 'Paga' : 'Pendente'}`, 20, yPosition);
-    yPosition += 10;
-  });
-
-  doc.save('controle_de_dividas.pdf');
-}
-
-// Função para exportar para Excel
-function exportarExcel() {
-  const ws = XLSX.utils.aoa_to_sheet([['Nome', 'Valor', 'Status']]);
-
-  dividas.forEach(divida => {
-    const row = [divida.nome, divida.valor.toFixed(2), divida.paga ? 'Paga' : 'Pendente'];
-    XLSX.utils.sheet_add_aoa(ws, [row], { origin: -1 });
-  });
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Dívidas');
-
-  XLSX.writeFile(wb, 'controle_de_dividas.xlsx');
-}
-
-// Função para fazer logout
-function logout() {
-  auth.signOut().then(() => {
-    dividas = [];
-    saldo = 0;
-    uid = null;
-    document.getElementById('controle-container').style.display = 'none';
-    document.getElementById('login-container').style.display = 'block';
-  });
-}
+function atualizarTotal 
