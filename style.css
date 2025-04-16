@@ -1,3 +1,4 @@
+
 /* Resetzinho básico */
 * {
   margin: 0;
@@ -195,7 +196,5 @@ button[onclick^="exportar"] {
   height: 32px !important; /* Altura fixa menor */
   line-height: 1 !important;
 }
-
-
 
 
