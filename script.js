@@ -1,3 +1,4 @@
+// Firebase Configuração
 const firebaseConfig = {
   apiKey: "AIzaSyBIfgDiQ9XnUqQY_7WxD7HoVWs7WCZ5AX8",
   authDomain: "gerenciamento-de-dividas.firebaseapp.com",
@@ -17,6 +18,7 @@ let dividas = [];
 let saldo = 0;
 let uid = null;
 
+// Controle de autenticação
 auth.onAuthStateChanged(user => {
   const loginContainer = document.getElementById('login-container');
   const cadastroContainer = document.getElementById('cadastro-container');
@@ -40,6 +42,7 @@ auth.onAuthStateChanged(user => {
   }
 });
 
+// Carregar dados do Firebase
 function carregarDadosUsuario() {
   database.ref('usuarios/' + uid).once('value').then(snapshot => {
     const data = snapshot.val();
@@ -56,6 +59,7 @@ function carregarDadosUsuario() {
   });
 }
 
+// Salvar dados no Firebase
 function salvarDadosUsuario() {
   if (!uid) return;
   database.ref('usuarios/' + uid).set({
@@ -64,34 +68,26 @@ function salvarDadosUsuario() {
   });
 }
 
+// Função login
 function login() {
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
 
-  if (!email || !password) {
-    alert("Preencha e-mail e senha.");
-    return;
-  }
-
   auth.signInWithEmailAndPassword(email, password)
     .then(() => {
-      alert("Login realizado com sucesso!");
       document.getElementById('login-email').value = '';
       document.getElementById('login-password').value = '';
+      alert("Login realizado com sucesso!");
     })
     .catch(error => {
       alert("Erro ao fazer login: " + error.message);
     });
 }
 
+// Função cadastrar usuário
 function cadastrarUsuario() {
   const email = document.getElementById('cadastro-email').value;
   const senha = document.getElementById('cadastro-senha').value;
-
-  if (!email || !senha) {
-    alert("Preencha os campos de cadastro.");
-    return;
-  }
 
   auth.createUserWithEmailAndPassword(email, senha)
     .then(() => {
@@ -106,6 +102,7 @@ function cadastrarUsuario() {
     });
 }
 
+// Funções para alternar entre login e cadastro
 function toggleToCadastro() {
   document.getElementById('login-container').style.display = 'none';
   document.getElementById('cadastro-container').style.display = 'block';
@@ -116,9 +113,10 @@ function toggleToLogin() {
   document.getElementById('login-container').style.display = 'block';
 }
 
+// Função para adicionar saldo
 function adicionarSaldo() {
   const novoSaldo = parseFloat(document.getElementById('saldoInicial').value);
-  if (isNaN(novoSaldo) || novoSaldo < 0) {
+  if (isNaN(novoSaldo) || novoSaldo <= 0) {
     alert('Digite um valor válido para o saldo.');
     return;
   }
@@ -129,6 +127,7 @@ function adicionarSaldo() {
   document.getElementById('saldoInicial').value = '';
 }
 
+// Função para adicionar dívida
 function adicionarDivida() {
   const nomeDivida = document.getElementById('nome').value;
   const valorDivida = parseFloat(document.getElementById('valor').value);
@@ -146,6 +145,7 @@ function adicionarDivida() {
   document.getElementById('valor').value = '';
 }
 
+// Função para atualizar a lista de dívidas
 function atualizarListaDividas() {
   const listaDividas = document.getElementById('listaDividas');
   listaDividas.innerHTML = '';
@@ -165,6 +165,7 @@ function atualizarListaDividas() {
   });
 }
 
+// Função para editar dívida
 function editarDivida(index) {
   const divida = dividas[index];
   const novoNome = prompt("Editar nome da dívida", divida.nome);
@@ -179,6 +180,7 @@ function editarDivida(index) {
   }
 }
 
+// Função para marcar dívida como paga
 function marcarComoPaga(index) {
   dividas[index].paga = true;
   atualizarListaDividas();
@@ -186,6 +188,7 @@ function marcarComoPaga(index) {
   salvarDadosUsuario();
 }
 
+// Função para excluir dívida
 function excluirDivida(index) {
   dividas.splice(index, 1);
   atualizarListaDividas();
@@ -193,6 +196,7 @@ function excluirDivida(index) {
   salvarDadosUsuario();
 }
 
+// Função para atualizar o total
 function atualizarTotal() {
   let totalDividas = dividas.reduce((total, divida) => total + (divida.paga ? 0 : divida.valor), 0);
   document.getElementById('total').textContent = totalDividas.toFixed(2);
@@ -201,13 +205,14 @@ function atualizarTotal() {
   document.getElementById('saldoRestante').textContent = saldoRestante.toFixed(2);
 }
 
+// Função para exportar para PDF
 function exportarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
   doc.text('Controle de Dívidas', 20, 20);
   doc.text(`Saldo Inicial: R$ ${saldo.toFixed(2)}`, 20, 30);
-
+  
   let yPosition = 40;
   dividas.forEach(divida => {
     doc.text(`${divida.nome} - R$ ${divida.valor.toFixed(2)} - ${divida.paga ? 'Paga' : 'Pendente'}`, 20, yPosition);
@@ -217,6 +222,7 @@ function exportarPDF() {
   doc.save('controle_de_dividas.pdf');
 }
 
+// Função para exportar para Excel
 function exportarExcel() {
   const ws = XLSX.utils.aoa_to_sheet([['Nome', 'Valor', 'Status']]);
 
@@ -227,9 +233,11 @@ function exportarExcel() {
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Dívidas');
+
   XLSX.writeFile(wb, 'controle_de_dividas.xlsx');
 }
 
+// Função para fazer logout
 function logout() {
   auth.signOut().then(() => {
     dividas = [];
@@ -238,9 +246,4 @@ function logout() {
     document.getElementById('controle-container').style.display = 'none';
     document.getElementById('login-container').style.display = 'block';
   });
-}
-
-function alternarTema() {
-  document.body.classList.toggle('light-theme');
-  document.body.classList.toggle('dark-theme');
 }
