@@ -5,17 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>APC Finanças</title>
   <link rel="stylesheet" href="style.css" />
-  <body class="light-theme">
+  
 
     <!-- Topo -->
     <div class="top-bar">
-      <div class="logo">💰 APC Finanças</div>
-      <div>
-        <button class="tema-btn" onclick="alternarTema()">🌗 Tema</button>
-        <button class="logout-btn" onclick="logout()">Sair</button>
-      </div>
+      <div class="logo">💰 APC Finanças</div> 
+    
     </div>
-
     <!-- LOGIN -->
     <div id="login-container" class="centralizado card">
       <h2>Entrar</h2>
@@ -35,16 +31,20 @@
     </div>
 
     <!-- DASHBOARD -->
+
+   
     <div id="controle-container" style="display: none;">
       <div class="dashboard">
-
         <!-- SALDO -->
-        <div class="card">
+        <div class="card"> 
           <h3>Saldo Inicial</h3>
           <input type="number" id="saldoInicial" placeholder="Digite o saldo em R$" />
           <button onclick="adicionarSaldo()">Salvar saldo</button>
         </div>
-
+        <div class="direito">
+          <button class="logout-btn" onclick="logout()">Sair</button>
+        </div>
+        
         <!-- RESUMO -->
         <div class="card">
           <h3>Resumo</h3>
@@ -54,6 +54,9 @@
 
         <!-- NOVA DÍVIDA -->
         <div class="card">
+          <div>
+            
+          </div>
           <h3>Adicionar Dívida</h3>
           <input type="text" id="nome" placeholder="Nome da dívida" />
           <input type="number" id="valor" placeholder="Valor em R$" />
@@ -69,12 +72,13 @@
         <!-- Exportação -->
         <button onclick="exportarPDF()">Exportar para PDF</button>
         <button onclick="exportarExcel()">Exportar para Excel</button>
-
+        
       </div>
     </div>
 
     <div class="footer">
       © APC Finanças 2025
+      
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -85,3 +89,5 @@
   </body>
   <script src="script.js"></script>
 </html>
+
+
