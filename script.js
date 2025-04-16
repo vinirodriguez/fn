@@ -1,4 +1,4 @@
-// Firebase Configuração
+// Configuração Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBIfgDiQ9XnUqQY_7WxD7HoVWs7WCZ5AX8",
   authDomain: "gerenciamento-de-dividas.firebaseapp.com",
@@ -14,11 +14,11 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const database = firebase.database();
 
+let uid = null;
 let dividas = [];
 let saldo = 0;
-let uid = null;
 
-// Controle de autenticação
+// Autenticação
 auth.onAuthStateChanged(user => {
   const loginContainer = document.getElementById('login-container');
   const cadastroContainer = document.getElementById('cadastro-container');
@@ -42,67 +42,43 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// Carregar dados do Firebase
-function carregarDadosUsuario() {
-  database.ref('usuarios/' + uid).once('value').then(snapshot => {
-    const data = snapshot.val();
-    if (data) {
-      dividas = data.dividas || [];
-      saldo = typeof data.saldo === "number" ? data.saldo : 0;
-    } else {
-      dividas = [];
-      saldo = 0;
-    }
-    atualizarListaDividas();
-    atualizarTotal();
-    document.getElementById('saldoInicial').value = saldo.toFixed(2);
-  });
-}
-
-// Salvar dados no Firebase
-function salvarDadosUsuario() {
-  if (!uid) return;
-  database.ref('usuarios/' + uid).set({
-    dividas: dividas,
-    saldo: saldo
-  });
-}
-
-// Função login
+// Login
 function login() {
   const email = document.getElementById('login-email').value;
-  const password = document.getElementById('login-password').value;
+  const senha = document.getElementById('login-password').value;
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
+  auth.signInWithEmailAndPassword(email, senha)
+    .then((userCredential) => {
+      uid = userCredential.user.uid;
+      carregarDadosUsuario();
       document.getElementById('login-email').value = '';
       document.getElementById('login-password').value = '';
-      alert("Login realizado com sucesso!");
+      alert('Login realizado com sucesso!');
     })
     .catch(error => {
-      alert("Erro ao fazer login: " + error.message);
+      alert('Erro ao fazer login: ' + error.message);
     });
 }
 
-// Função cadastrar usuário
+// Cadastro
 function cadastrarUsuario() {
   const email = document.getElementById('cadastro-email').value;
   const senha = document.getElementById('cadastro-senha').value;
 
   auth.createUserWithEmailAndPassword(email, senha)
     .then(() => {
-      alert("Cadastro realizado com sucesso! Faça o login.");
+      alert('Cadastro realizado com sucesso! Faça login.');
       document.getElementById('cadastro-email').value = '';
       document.getElementById('cadastro-senha').value = '';
       auth.signOut();
       toggleToLogin();
     })
     .catch(error => {
-      alert("Erro ao cadastrar: " + error.message);
+      alert('Erro ao cadastrar: ' + error.message);
     });
 }
 
-// Funções para alternar entre login e cadastro
+// Alternar entre login e cadastro
 function toggleToCadastro() {
   document.getElementById('login-container').style.display = 'none';
   document.getElementById('cadastro-container').style.display = 'block';
@@ -113,10 +89,36 @@ function toggleToLogin() {
   document.getElementById('login-container').style.display = 'block';
 }
 
-// Função para adicionar saldo
+// Salvar dados no Firebase
+function salvarDadosUsuario() {
+  if (!uid) return;
+
+  database.ref('usuarios/' + uid).set({
+    dividas,
+    saldo
+  });
+}
+
+// Carregar dados do Firebase
+function carregarDadosUsuario() {
+  if (!uid) return;
+
+  database.ref('usuarios/' + uid).once('value')
+    .then(snapshot => {
+      const data = snapshot.val();
+      dividas = data?.dividas || [];
+      saldo = typeof data?.saldo === 'number' ? data.saldo : 0;
+
+      atualizarListaDividas();
+      atualizarTotal();
+      document.getElementById('saldoInicial').value = saldo.toFixed(2);
+    });
+}
+
+// Adicionar saldo
 function adicionarSaldo() {
   const novoSaldo = parseFloat(document.getElementById('saldoInicial').value);
-  if (isNaN(novoSaldo) || novoSaldo <= 0) {
+  if (isNaN(novoSaldo) || novoSaldo < 0) {
     alert('Digite um valor válido para o saldo.');
     return;
   }
@@ -127,28 +129,29 @@ function adicionarSaldo() {
   document.getElementById('saldoInicial').value = '';
 }
 
-// Função para adicionar dívida
+// Adicionar dívida
 function adicionarDivida() {
-  const nomeDivida = document.getElementById('nome').value;
-  const valorDivida = parseFloat(document.getElementById('valor').value);
+  const nome = document.getElementById('nome').value;
+  const valor = parseFloat(document.getElementById('valor').value);
 
-  if (!nomeDivida || isNaN(valorDivida) || valorDivida <= 0) {
-    alert('Insira um nome válido e um valor válido.');
+  if (!nome || isNaN(valor) || valor <= 0) {
+    alert('Insira um nome e um valor válido.');
     return;
   }
 
-  dividas.push({ nome: nomeDivida, valor: valorDivida, paga: false });
+  dividas.push({ nome, valor, paga: false });
   atualizarListaDividas();
   atualizarTotal();
   salvarDadosUsuario();
+
   document.getElementById('nome').value = '';
   document.getElementById('valor').value = '';
 }
 
-// Função para atualizar a lista de dívidas
+// Atualizar lista de dívidas
 function atualizarListaDividas() {
-  const listaDividas = document.getElementById('listaDividas');
-  listaDividas.innerHTML = '';
+  const lista = document.getElementById('listaDividas');
+  lista.innerHTML = '';
 
   dividas.forEach((divida, index) => {
     const div = document.createElement('div');
@@ -161,26 +164,12 @@ function atualizarListaDividas() {
       <button onclick="editarDivida(${index})">Editar</button>
       <button onclick="excluirDivida(${index})">Excluir</button>
     `;
-    listaDividas.appendChild(div);
+
+    lista.appendChild(div);
   });
 }
 
-// Função para editar dívida
-function editarDivida(index) {
-  const divida = dividas[index];
-  const novoNome = prompt("Editar nome da dívida", divida.nome);
-  const novoValor = prompt("Editar valor da dívida", divida.valor);
-
-  if (novoNome !== null && novoValor !== null && !isNaN(parseFloat(novoValor))) {
-    dividas[index].nome = novoNome;
-    dividas[index].valor = parseFloat(novoValor);
-    atualizarListaDividas();
-    atualizarTotal();
-    salvarDadosUsuario();
-  }
-}
-
-// Função para marcar dívida como paga
+// Marcar como paga
 function marcarComoPaga(index) {
   dividas[index].paga = true;
   atualizarListaDividas();
@@ -188,7 +177,21 @@ function marcarComoPaga(index) {
   salvarDadosUsuario();
 }
 
-// Função para excluir dívida
+// Editar dívida
+function editarDivida(index) {
+  const novaDesc = prompt('Editar nome da dívida', dividas[index].nome);
+  const novoValor = parseFloat(prompt('Editar valor da dívida', dividas[index].valor));
+
+  if (novaDesc !== null && !isNaN(novoValor)) {
+    dividas[index].nome = novaDesc;
+    dividas[index].valor = novoValor;
+    atualizarListaDividas();
+    atualizarTotal();
+    salvarDadosUsuario();
+  }
+}
+
+// Excluir dívida
 function excluirDivida(index) {
   dividas.splice(index, 1);
   atualizarListaDividas();
@@ -196,54 +199,46 @@ function excluirDivida(index) {
   salvarDadosUsuario();
 }
 
-// Função para atualizar o total
+// Atualizar total
 function atualizarTotal() {
-  let totalDividas = dividas.reduce((total, divida) => total + (divida.paga ? 0 : divida.valor), 0);
-  document.getElementById('total').textContent = totalDividas.toFixed(2);
+  const total = dividas.reduce((acc, d) => acc + (d.paga ? 0 : d.valor), 0);
+  document.getElementById('total').textContent = total.toFixed(2);
 
-  let saldoRestante = saldo - totalDividas;
-  document.getElementById('saldoRestante').textContent = saldoRestante.toFixed(2);
+  const restante = saldo - total;
+  document.getElementById('saldoRestante').textContent = restante.toFixed(2);
 }
 
-// Função para exportar para PDF
+// Logout
+function logout() {
+  salvarDadosUsuario();
+  auth.signOut();
+}
+
+// Exportar PDF
 function exportarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
   doc.text('Controle de Dívidas', 20, 20);
   doc.text(`Saldo Inicial: R$ ${saldo.toFixed(2)}`, 20, 30);
-  
-  let yPosition = 40;
-  dividas.forEach(divida => {
-    doc.text(`${divida.nome} - R$ ${divida.valor.toFixed(2)} - ${divida.paga ? 'Paga' : 'Pendente'}`, 20, yPosition);
-    yPosition += 10;
+
+  let y = 40;
+  dividas.forEach(d => {
+    doc.text(`${d.nome} - R$ ${d.valor.toFixed(2)} - ${d.paga ? 'Paga' : 'Pendente'}`, 20, y);
+    y += 10;
   });
 
   doc.save('controle_de_dividas.pdf');
 }
 
-// Função para exportar para Excel
+// Exportar Excel
 function exportarExcel() {
   const ws = XLSX.utils.aoa_to_sheet([['Nome', 'Valor', 'Status']]);
-
-  dividas.forEach(divida => {
-    const row = [divida.nome, divida.valor.toFixed(2), divida.paga ? 'Paga' : 'Pendente'];
-    XLSX.utils.sheet_add_aoa(ws, [row], { origin: -1 });
+  dividas.forEach(d => {
+    XLSX.utils.sheet_add_aoa(ws, [[d.nome, d.valor.toFixed(2), d.paga ? 'Paga' : 'Pendente']], { origin: -1 });
   });
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Dívidas');
-
   XLSX.writeFile(wb, 'controle_de_dividas.xlsx');
-}
-
-// Função para fazer logout
-function logout() {
-  auth.signOut().then(() => {
-    dividas = [];
-    saldo = 0;
-    uid = null;
-    document.getElementById('controle-container').style.display = 'none';
-    document.getElementById('login-container').style.display = 'block';
-  });
 }
